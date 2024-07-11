@@ -11,7 +11,7 @@ setuptools.setup(
         "KIM Validation and Verificaiton"
     ),
     author=["ilia Nikiforov, Eric Fuemmeler"],
-    install_requires=["kim-tools"],
+    install_requires=["kim-tools","numdifftools"],
     packages=setuptools.find_packages(),
     license="CDDL",
 )
