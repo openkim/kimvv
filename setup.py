@@ -1,8 +1,25 @@
-import setuptools, subprocess
+import setuptools, tarfile, shutil, os, pathlib
+from urllib.request import urlretrieve
 
-# As TDs are published, we will download from OpenKIM.org instead of cloning from Github
-subprocess.run(['git','clone','https://github.com/openkim-hackathons/ElasticConstants__TD_000000000000_000.git','kimvv/ElasticConstants'])
-subprocess.run(['touch','kimvv/ElasticConstants/__init__.py'])
+openkim_drivers = ['ElasticConstantsCrystal__TD_034002468289_000']
+kimvv_drivers = []
+
+with open('kimvv/__init__.py','w') as f_init:
+    f_init.write('__version__ = "0.1.0"\n')
+    list_of_drivers_literal = '__all__ = ['
+    for openkim_driver in openkim_drivers:
+        url = 'https://openkim.org/download/' + openkim_driver + '.txz'
+        prefix = '_'.join(openkim_driver.split('_')[:-4])
+        tmpfile, _ = urlretrieve(url)
+        with tarfile.open(tmpfile,'r:xz') as f:
+            f.extractall()
+        final_path_to_driver = os.path.join('kimvv',prefix)
+        shutil.move(openkim_driver,final_path_to_driver)
+        pathlib.Path(os.path.join(final_path_to_driver,'__init__.py')).touch()
+        kimvv_drivers.append(prefix)
+        f_init.write('from .%s.test_driver.test_driver import TestDriver as %s\n'%(prefix,prefix))
+        list_of_drivers_literal += prefix+','
+    f_init.write(list_of_drivers_literal+']\n')
 
 setuptools.setup(
     name="kimvv",
