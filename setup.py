@@ -14,6 +14,8 @@ with open('kimvv/__init__.py','w') as f_init:
         with tarfile.open(tmpfile,'r:xz') as f:
             f.extractall()
         final_path_to_driver = os.path.join('kimvv',prefix)
+        if os.path.isdir(final_path_to_driver):
+            shutil.rmtree(final_path_to_driver)
         shutil.move(openkim_driver,final_path_to_driver)
         pathlib.Path(os.path.join(final_path_to_driver,'__init__.py')).touch()
         kimvv_drivers.append(prefix)
@@ -28,7 +30,7 @@ setuptools.setup(
         "KIM Validation and Verificaiton"
     ),
     author=["ilia Nikiforov, Eric Fuemmeler"],
-    install_requires=["kim-tools","numdifftools"],
+    install_requires=["kim-tools @ git+https://github.com/openkim/kim-tools.git","numdifftools"],
     packages=setuptools.find_packages(),
     license="CDDL",
 )
