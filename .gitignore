@@ -1,4 +1,5 @@
 scratch*
+output/
 
 # Actual package directory always created 
 # dynamically
