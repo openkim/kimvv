@@ -7,15 +7,15 @@ Usage example:
 
 .. code-block:: python
 
-    from kimvv import ElasticConstantsCrystal
+    from kimvv import EquilibriumCrystalStructure
     from ase.build import bulk
     from json import dumps
 
-    # Give it a KIM Model Name (this is the example model that comes with most KIM installations)
-    elastic = ElasticConstantsCrystal('LennardJones_Ar')
+    # If a string is passed when instantiating the class, it is assumed to be a KIM model name
+    relax = EquilibriumCrystalStructure('LennardJones_Ar')
 
-    # Pass an Atoms object and optionally ask to optimize it first (available in every Test Driver)
-    elastic(bulk('Ar','fcc',5.0), optimize=True)
+    # Pass an Atoms object
+    relax(bulk('Ar','fcc',5.0))
 
     # Access the results dictionary
-    print(dumps(elastic.property_instances,indent=2))
+    print(dumps(relax.property_instances,indent=2))
