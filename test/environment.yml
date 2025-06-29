@@ -17,3 +17,4 @@ dependencies:
   - pymatgen
   - semver
   - lammps
+  - tomlkit
