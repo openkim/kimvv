@@ -1,0 +1,19 @@
+name: kim-tools-env
+channels:
+  - conda-forge
+dependencies:
+  - kimpy
+  - ase
+  - kim-property
+  - kim-edn
+  - spglib
+  - kim-query
+  - sympy
+  - numpy
+  - scipy
+  - jinja2
+  - matplotlib
+  - scikit-learn
+  - pymatgen
+  - semver
+  - lammps

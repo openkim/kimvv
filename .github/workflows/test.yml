@@ -1,0 +1,68 @@
+name: Testing
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: pip install pre-commit
+      - name: Lint
+        run: pre-commit run --show-diff-on-failure --all-files
+
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, macos-13]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Set up micromamba
+        uses: mamba-org/setup-micromamba@v1.9.0
+        with:
+          environment-name: test-env
+          cache-environment: true
+          create-args: >-
+            -f test/environment.yml
+
+      - name: Install units
+        if: runner.os == 'Linux'
+        shell: bash -el {0}
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install units
+
+      - name: Install AFLOW on Linux
+        if: runner.os == 'Linux'
+        shell: bash -el {0}
+        run: |
+          wget https://github.com/aflow-org/aflow/releases/download/v4.0.5/aflow-4.0.5-ubuntu22-amd64.tar.gz
+          tar -xf aflow-4.0.5-ubuntu22-amd64.tar.gz
+
+      - name: Install AFLOW on macOS
+        if: runner.os == 'macOS'
+        shell: bash -el {0}
+        run: |
+          brew tap aflow-org/aflow
+          brew install aflow
+
+      - name: Run pre-setup and unstall
+        shell: bash -el {0}
+        run: |
+          python pre_setup.py
+          python -m pip install .
+
+      - name: Run tests
+        shell: bash -el {0}
+        run: |
+          export PATH=$PATH:$PWD/aflow-4.0.5-Linux/bin
+          cd test
+          pytest
