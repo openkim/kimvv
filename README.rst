@@ -1,10 +1,12 @@
 KIM Validation and Verification
 ===============================
 
-|Testing|
+|Testing| |PyPI|
 
 .. |Testing| image:: https://github.com/openkim/kimvv/actions/workflows/test.yml/badge.svg
    :target: https://github.com/openkim/kimvv/actions/workflows/test.yml
+.. |PyPI| image:: https://img.shields.io/pypi/v/kimvv.svg
+   :target: https://pypi.org/project/kimvv/
 
 This package allows the user to run any Test Drivers written using the `kim-tools <https://kim-tools.readthedocs.io>`_ package locally.
 
