@@ -1,25 +1,34 @@
-import tarfile
-import shutil
+import json
 import os
 import pathlib
-from urllib.request import urlretrieve
-import tomlkit
+import shutil
+import tarfile
+from urllib.request import urlopen, urlretrieve
 
 import kim_edn
+import tomlkit
 
-openkim_drivers = ["EquilibriumCrystalStructure__TD_457028483760_003"]
-
-with open("pyproject.toml.tpl") as f_pyproject:
-    pyproject = tomlkit.parse(f_pyproject.read())
+# List of production Test Drivers
+OPENKIM_TEST_DRIVERS = ["EquilibriumCrystalStructure__TD_457028483760_003"]
 
 
-with open("kimvv/__init__.py", "w") as f_init:
-    list_of_drivers_literal = "__all__ = ["
-    for openkim_driver in openkim_drivers:
-        print(f"Importing {openkim_driver}")
+def create_init(td_root_path: os.PathLike):
+    # Create an __init__.py in the Test Driver root directory
+    # TODO: Rethink this, this brings in additional unwanted .py files
+    # if they exist
+    pathlib.Path(os.path.join(td_root_path, "__init__.py")).touch()
+
+
+if __name__ == "__main__":
+    kimvv_test_drivers = []
+
+    # Download and untar production OpenKIM TDs
+    for test_driver in OPENKIM_TEST_DRIVERS:
+        print(f"Importing {test_driver}")
         # Get the .txz from OpenKIM as a tmpfile
-        url = "https://openkim.org/download/" + openkim_driver + ".txz"
-        prefix = "_".join(openkim_driver.split("_")[:-4])
+        url = "https://openkim.org/download/" + test_driver + ".txz"
+        prefix = "_".join(test_driver.split("_")[:-4])
+        kimvv_test_drivers.append(prefix)
         tmpfile, _ = urlretrieve(url)
         # Extract it and move it to kimvv directory
         with tarfile.open(tmpfile, "r:xz") as f:
@@ -27,18 +36,17 @@ with open("kimvv/__init__.py", "w") as f_init:
         final_path_to_driver = os.path.join("kimvv", prefix)
         if os.path.isdir(final_path_to_driver):
             shutil.rmtree(final_path_to_driver)
-        shutil.move(openkim_driver, final_path_to_driver)
-        # Create an __init__.py in the Test Driver root directory
-        # TODO: Rethink this, this brings in additional unwanted .py files
-        # if they exist
-        pathlib.Path(os.path.join(final_path_to_driver, "__init__.py")).touch()
-        # Take care of  kimvv/__init__.py
-        f_init.write(
-            f"from .{prefix}.test_driver.test_driver import TestDriver as {prefix}\n"
-        )
-        list_of_drivers_literal += prefix + ","
+        shutil.move(test_driver, final_path_to_driver)
+        create_init(final_path_to_driver)
 
-        requirements_path = os.path.join(final_path_to_driver, "requirements.txt")
+    with open("pyproject.toml.tpl") as f_pyproject:
+        pyproject = tomlkit.parse(f_pyproject.read())
+    manifest_kimvv = ""
+
+    # Should by now all be in directories named `kimvv/{test_driver}`
+    for test_driver in kimvv_test_drivers:
+        driver_path = os.path.join("kimvv", test_driver)
+        requirements_path = os.path.join(driver_path, "requirements.txt")
         if os.path.isfile(requirements_path):
             pyproject["tool"]["setuptools"]["dynamic"]["dependencies"]["file"].append(
                 requirements_path
@@ -46,18 +54,54 @@ with open("kimvv/__init__.py", "w") as f_init:
         else:
             print("NOTE: Importing a Test Driver without a requirements.txt")
 
-        # Should always exist
-        kimspec_path = os.path.join(final_path_to_driver, "kimspec.edn")
+        # Kimspec should always exist
+        kimspec_path = os.path.join(driver_path, "kimspec.edn")
         kimspec = kim_edn.load(kimspec_path)
+        manifest_kimvv += "include " + kimspec_path + "\n"
         if "developer" not in kimspec:
-            print("WARNING: Importing a Test Driver without a kimspec.edn")
+            print("WARNING: Importing a Test Driver without any developers")
         else:
+            # Look up developer on openkim.org
             for developer in kimspec["developer"]:
-                pass
-                # This is a KIM ID. Need to query for first and last name
-        # TODO: Add MANIFEST.in handling
+                with urlopen(f"https://openkim.org/profile/{developer}.json") as u:
+                    developer_profile = json.load(u)
+                    name = (
+                        developer_profile["first-name"]
+                        + " "
+                        + developer_profile["last-name"]
+                    )
+                    if any(
+                        name.lower() == author["name"].lower()
+                        for author in pyproject["project"]["authors"]
+                    ):
+                        continue
+                    pyproject["project"]["authors"].append({"name": name})
 
-    f_init.write(list_of_drivers_literal + "]\n")
+        manifest_path = os.path.join(driver_path, "MANIFEST.in")
+        if os.path.isfile(manifest_path):
+            with open(manifest_path) as f:
+                manifest_td = f.read()
+            manifest_kimvv += manifest_td + "\n"
+        # TODO: Build docs by combining READMES
 
-with open("pyproject.toml", "w") as f:
-    f.write(tomlkit.dumps(pyproject))
+    # write __init__.py
+    with open("kimvv/__init__.py", "w") as f:
+        f.write("from .core import KIMVVTestDriver\n")
+        for td in kimvv_test_drivers:
+            f.write(f"from .{td}.test_driver.test_driver import TestDriver as __{td}\n")
+
+        f.write("\n\n")
+
+        for td in kimvv_test_drivers:
+            f.write(f"class {td}(__{td}, KIMVVTestDriver):\n    pass\n\n\n")
+
+        f.write("__all__ = [\n")
+        for td in kimvv_test_drivers:
+            f.write(f'    "{td}",\n')
+        f.write("]\n")
+
+    with open("MANIFEST.in", "w") as f:
+        f.write(manifest_kimvv)
+
+    with open("pyproject.toml", "w") as f:
+        f.write(tomlkit.dumps(pyproject))
