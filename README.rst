@@ -1,7 +1,10 @@
 KIM Validation and Verification
 ===============================
 
-[![Testing](https://github.com/openkim/kimvv/actions/workflows/test.yml/badge.svg)](https://github.com/openkim/kimvv/actions/workflows/test.yml)
+|Testing|
+
+.. |Testing| image:: https://github.com/openkim/kimvv/actions/workflows/test.yml/badge.svg
+   :target: https://github.com/openkim/kimvv/actions/workflows/test.yml
 
 This package allows the user to run any Test Drivers written using the `kim-tools <https://kim-tools.readthedocs.io>`_ package locally.
 
