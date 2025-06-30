@@ -1,3 +1,4 @@
+import warnings
 from typing import Union
 
 import pytest
@@ -27,6 +28,9 @@ test_tuples = [(driver, model) for driver in DRIVERS for model in MODELS]
 
 
 @pytest.mark.parametrize("TestDriver,model", test_tuples)
+@pytest.mark.filterwarnings(
+    "ignore:(?!WARNING: Your Test Driver is unable to run with non-KIM calculators )"
+)
 def test_test_driver(
     TestDriver: type[CompleteKIMVVTestDriver], model: Union[str, Calculator]
 ) -> None:
@@ -48,20 +52,28 @@ def test_test_driver(
 
     td = TestDriver(model)
 
-    # Run the driver with crystal structure dict
-    results_from_dict = td(crystal_structure_relaxed)
+    try:
+        # Run the driver with crystal structure dict
+        results_from_dict = td(crystal_structure_relaxed)
 
-    # Run the atoms with relaxed atoms
-    atoms_relaxed = get_atoms_from_crystal_structure(crystal_structure_relaxed)
-    results_from_atoms = td(atoms_relaxed)
+        # Run the atoms with relaxed atoms
+        atoms_relaxed = get_atoms_from_crystal_structure(crystal_structure_relaxed)
+        results_from_atoms = td(atoms_relaxed)
 
-    for results in (results_from_dict, results_from_atoms):
-        # Should return at least something
-        assert len(results_from_atoms) > 1
+        for results in (results_from_dict, results_from_atoms):
+            # Should return at least something
+            assert len(results_from_atoms) > 1
 
-        # If we have properties in our kimspec, check that the test driver
-        # only reports those
-        if "properties" in td.kimspec:
-            properties = td.kimspec["properties"]
-            for result in results:
-                assert result["property-id"] in properties
+            # If we have properties in our kimspec, check that the test driver
+            # only reports those
+            if "properties" in td.kimspec:
+                properties = td.kimspec["properties"]
+                for result in results:
+                    assert result["property-id"] in properties
+    except KIMTestDriver.NonKIMModelError:
+        warnings.warn(
+            "WARNING: Your Test Driver is unable to run with non-KIM calculators "
+            "because it requests the kim_model_name property. This is acceptable, "
+            "but only if strictly necessary (e.g. needing a KIM model name to run a "
+            "LAMMPS calculation)"
+        )
