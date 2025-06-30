@@ -29,7 +29,7 @@ test_tuples = [(driver, model) for driver in DRIVERS for model in MODELS]
 
 @pytest.mark.parametrize("TestDriver,model", test_tuples)
 @pytest.mark.filterwarnings(
-    "ignore:(?!WARNING: Your Test Driver is unable to run with non-KIM calculators )"
+    "ignore:(?!WARNING Your Test Driver is unable to run with non-KIM calculators )"
 )
 def test_test_driver(
     TestDriver: type[CompleteKIMVVTestDriver], model: Union[str, Calculator]
@@ -72,7 +72,7 @@ def test_test_driver(
                     assert result["property-id"] in properties
     except KIMTestDriver.NonKIMModelError:
         warnings.warn(
-            "WARNING: Your Test Driver is unable to run with non-KIM calculators "
+            "WARNING Your Test Driver is unable to run with non-KIM calculators "
             "because it requests the kim_model_name property. This is acceptable, "
             "but only if strictly necessary (e.g. needing a KIM model name to run a "
             "LAMMPS calculation)"
