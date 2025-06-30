@@ -71,7 +71,7 @@ if __name__ == "__main__":
                         + developer_profile["last-name"]
                     )
                     if any(
-                        name.lower() == author["name"].lower()
+                        name.lower() in author["name"].lower()
                         for author in pyproject["project"]["authors"]
                     ):
                         continue

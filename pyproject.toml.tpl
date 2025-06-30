@@ -7,8 +7,8 @@ name = "kimvv"
 version = "0.1.0"
 dynamic = ["dependencies", "readme"]
 authors = [
-    { name = "ilia Nikiforov", email = "nikif002@umn.edu" },
-    { name = "Eric Fuemmeler", email = "efuemmel@umn.edu" },
+    { name = "ilia Nikiforov <nikif002@umn.edu>" },
+    { name = "Eric Fuemmeler <efuemmel@umn.edu>" },
 ]
 maintainers = [
     { name = "ilia Nikiforov", email = "nikif002@umn.edu" },
