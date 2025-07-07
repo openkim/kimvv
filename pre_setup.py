@@ -133,8 +133,12 @@ if __name__ == "__main__":
         manifest_path = os.path.join(driver_path, "MANIFEST.in")
         if os.path.isfile(manifest_path):
             with open(manifest_path) as f:
-                manifest_td = f.read()
-            manifest_kimvv += manifest_td + "\n"
+                manifest_td_lines = f.readlines()
+            for line in manifest_td_lines:
+                command = line.split()[0]
+                path = line.split()[1]
+                path_full = os.path.join(driver_path, path)
+                manifest_kimvv += f"{command} {path_full}\n"
         # TODO: Build docs by combining READMES
 
     # write __init__.py
