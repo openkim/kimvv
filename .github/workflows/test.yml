@@ -4,6 +4,8 @@ on: [push, pull_request]
 
 jobs:
   lint:
+    if: github.repository == 'openkim/kimvv'
+
     runs-on: ubuntu-latest
 
     steps:
