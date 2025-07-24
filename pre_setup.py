@@ -9,9 +9,10 @@ from urllib.request import urlopen, urlretrieve
 import kim_edn
 import tomlkit
 
-# Dictionary of production Test Drivers and kwargs to pass to them)
+# Dictionary of production Test Drivers and kwargs to pass to them during testing)
 OPENKIM_TEST_DRIVERS = {
-    "EquilibriumCrystalStructure__TD_457028483760_003": {"steps": 10}
+    "EquilibriumCrystalStructure__TD_457028483760_003": {"steps": 10},
+    "ElasticConstantsCrystal__TD_034002468289_001": {},
 }
 
 # List of URLs of development Test Drivers to test
