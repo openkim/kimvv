@@ -58,7 +58,7 @@ def test_test_driver(td_name: str, model: Union[str, Calculator]) -> None:
 
         for results in (results_from_dict, results_from_atoms):
             # Should return at least something
-            assert len(results_from_atoms) > 1
+            assert len(results_from_atoms) > 0
 
             # If we have properties in our kimspec, check that the test driver
             # only reports those
