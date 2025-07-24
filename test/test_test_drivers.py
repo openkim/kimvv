@@ -1,3 +1,4 @@
+import json
 import warnings
 from typing import Union
 
@@ -9,13 +10,8 @@ from kim_tools import KIMTestDriver, get_atoms_from_crystal_structure
 
 import kimvv
 
-
-# For type hinting
-class CompleteKIMVVTestDriver(KIMTestDriver, kimvv.KIMVVTestDriver):
-    pass
-
-
-DRIVERS = [getattr(kimvv, td_name) for td_name in kimvv.__all__]
+with open("test_inputs.json") as f:
+    DRIVERS = json.load(f)
 
 # Test on FCC Au
 MODELS = [
@@ -27,18 +23,16 @@ MODELS = [
 test_tuples = [(driver, model) for driver in DRIVERS for model in MODELS]
 
 
-@pytest.mark.parametrize("TestDriver,model", test_tuples)
+@pytest.mark.parametrize("td_name,model", test_tuples)
 @pytest.mark.filterwarnings("ignore:(?!WARNING Your )")
-def test_test_driver(
-    TestDriver: type[CompleteKIMVVTestDriver], model: Union[str, Calculator]
-) -> None:
+def test_test_driver(td_name: str, model: Union[str, Calculator]) -> None:
     """
-    Run ``TestDriver`` with ``model`` on and confirm that it returns at least one
+    Run ``td_name`` with ``model`` on and confirm that it returns at least one
     instance of the properties it claims to return, and no others.
 
     Args:
-        TestDriver:
-            The class of Test Driver to run.
+        td_name:
+            The name of the class of Test Driver to run.
         model:
             The model to use.
     """
@@ -48,15 +42,19 @@ def test_test_driver(
     # Relax it with EquilibriumCrystalStructure
     crystal_structure_relaxed = kimvv.EquilibriumCrystalStructure(model)(atoms_init)[0]
 
+    TestDriver = getattr(kimvv, td_name)
+
+    td_kwargs = DRIVERS[td_name]
+
     td = TestDriver(model)
 
     try:
         # Run the driver with crystal structure dict
-        results_from_dict = td(crystal_structure_relaxed)
+        results_from_dict = td(crystal_structure_relaxed, **td_kwargs)
 
         # Run the atoms with relaxed atoms
         atoms_relaxed = get_atoms_from_crystal_structure(crystal_structure_relaxed)
-        results_from_atoms = td(atoms_relaxed)
+        results_from_atoms = td(atoms_relaxed, **td_kwargs)
 
         for results in (results_from_dict, results_from_atoms):
             # Should return at least something

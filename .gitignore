@@ -1,5 +1,6 @@
 scratch*
 output/
+test/test_inputs.json
 
 # Actual package directory always created
 # dynamically

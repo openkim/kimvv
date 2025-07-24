@@ -9,11 +9,13 @@ from urllib.request import urlopen, urlretrieve
 import kim_edn
 import tomlkit
 
-# List of production Test Drivers
-OPENKIM_TEST_DRIVERS = ["EquilibriumCrystalStructure__TD_457028483760_003"]
+# Dictionary of production Test Drivers and kwargs to pass to them)
+OPENKIM_TEST_DRIVERS = {
+    "EquilibriumCrystalStructure__TD_457028483760_003": {"steps": 10}
+}
 
 # List of URLs of development Test Drivers to test
-DEVEL_TEST_DRIVERS = []
+DEVEL_TEST_DRIVERS = {}
 
 
 def create_init(td_root_path: os.PathLike):
@@ -38,7 +40,7 @@ def move_driver(prefix: str, source_dir: os.PathLike):
 
 
 if __name__ == "__main__":
-    kimvv_test_drivers = []
+    kimvv_test_drivers = {}
 
     # Download and untar production OpenKIM TDs
     for test_driver in OPENKIM_TEST_DRIVERS:
@@ -46,7 +48,8 @@ if __name__ == "__main__":
         # Get the .txz from OpenKIM as a tmpfile
         url = "https://openkim.org/download/" + test_driver + ".txz"
         prefix = "_".join(test_driver.split("_")[:-4])
-        kimvv_test_drivers.append(prefix)
+        # Store the dict of kwargs in the "kimvv_test_drivers" dictionary
+        kimvv_test_drivers[prefix] = OPENKIM_TEST_DRIVERS[test_driver]
         tmpfile, _ = urlretrieve(url)
         # Extract it and move it to kimvv directory
         with tarfile.open(tmpfile, "r:xz") as f:
@@ -89,8 +92,11 @@ if __name__ == "__main__":
                     raise RuntimeError("Somehow got 11 TDs with the same name")
 
             print(f"Importing from \n{test_driver}\n and naming it {td_name}")
-            kimvv_test_drivers.append(td_name)
+            kimvv_test_drivers[td_name] = DEVEL_TEST_DRIVERS[test_driver]
             move_driver(td_name, td_root_path)
+
+    with open("test/test_inputs.json", "w") as f:
+        json.dump(kimvv_test_drivers, f)
 
     with open("pyproject.toml.tpl") as f_pyproject:
         pyproject = tomlkit.parse(f_pyproject.read())
