@@ -1,1 +1,2 @@
 kim_edn
+kim_property>=2.6.10
