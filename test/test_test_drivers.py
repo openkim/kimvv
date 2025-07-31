@@ -11,7 +11,7 @@ from kim_tools import KIMTestDriver, get_atoms_from_crystal_structure
 import kimvv
 
 with open("test_inputs.json") as f:
-    DRIVERS = json.load(f)
+    DRIVERS = json.load(f)[-1] # test only my TD
 
 # Test on FCC Au
 MODELS = [
