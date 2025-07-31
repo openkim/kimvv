@@ -11,7 +11,7 @@ from kim_tools import KIMTestDriver, get_atoms_from_crystal_structure
 import kimvv
 
 with open("test_inputs.json") as f:
-    DRIVERS = json.load(f)[-1] # test only my TD
+    DRIVERS = json.load(f)
 
 # Test on FCC Au
 MODELS = [
@@ -20,7 +20,7 @@ MODELS = [
     LennardJones(sigma=2.42324, epsilon=2.30580, rc=9.69298),
 ]
 
-test_tuples = [(driver, model) for driver in DRIVERS for model in MODELS]
+test_tuples = [(driver, model) for driver in DRIVERS for model in MODELS][-3:] # take vacancy tests
 
 
 @pytest.mark.parametrize("td_name,model", test_tuples)
