@@ -10,3 +10,7 @@ class KIMVVTestDriver:
         mypath = pathlib.Path(__file__).parent.resolve()
         myname = self.__class__.__name__
         return kim_edn.load(os.path.join(mypath, myname, "kimspec.edn"))
+
+    @classmethod
+    def printdoc(cls):
+        print(cls._calculate.__doc__)
