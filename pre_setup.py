@@ -16,9 +16,7 @@ OPENKIM_TEST_DRIVERS = {
 }
 
 # List of URLs of development Test Drivers to test
-DEVEL_TEST_DRIVERS = {
-    "https://github.com/openkim-hackathons/VacancyFormationEnergyRelaxationVolume__TD_647413317626_002/archive/refs/tags/v0.0.1-alpha.tar.gz":{}
-}
+DEVEL_TEST_DRIVERS = {}
 
 
 def create_init(td_root_path: os.PathLike):
