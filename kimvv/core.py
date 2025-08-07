@@ -14,7 +14,10 @@ class KIMVVTestDriver:
         return kim_edn.load(os.path.join(mypath, myname, "kimspec.edn"))
 
     def _resolve_dependencies(self, **kwargs):
-        # defaults to equilibrium but can be defined within TestDriver for driver specific needs
+        '''
+        defaults to equilibrium but can be defined within 
+        TestDriver for driver specific needs
+        '''
         # updates kwargs if needed and returns
         if isinstance(self, kimvv.EquilibriumCrystalStructure):
             return kwargs
@@ -53,7 +56,8 @@ def override_call_method(cls):
 
         # _setup is likely overridden by an derived class
         self._setup(material, **kwargs)
-        # resolve dependencies-since input to calculate may depend on output, return kwargs
+        # resolve dependencies
+        # since input to calculate may depend on output, return kwargs
         kwargs = self._resolve_dependencies(**kwargs)
 
         # implemented by each individual Test Driver
