@@ -14,21 +14,23 @@ class KIMVVTestDriver:
         myname = self.__class__.__name__
         return kim_edn.load(os.path.join(mypath, myname, "kimspec.edn"))
 
-    def _resolve_dependencies(self, **kwargs):
+    def _resolve_dependencies(self, material, **kwargs):
         """
         defaults to equilibrium but can be defined within
         TestDriver for driver specific needs
         """
         # updates kwargs if needed and returns
         if isinstance(self, kimvv.EquilibriumCrystalStructure):
-            return kwargs
+            return material, kwargs
         else:
             print("Resolving dependencies...")
             ecs_test = kimvv.EquilibriumCrystalStructure(self._calc)
-            ecs_test(self._get_atoms())
-            # is this fragile?
-            self._update_nominal_parameter_values(ecs_test._get_atoms())
-            return kwargs
+            ecs_results = ecs_test(material)
+            for result in ecs_results:
+                if result["property-id"].endswith("crystal-structure-npt"):
+                    material_relaxed = result
+                    break
+            return material_relaxed, kwargs
 
     @classmethod
     def printdoc(cls):
@@ -60,11 +62,11 @@ def override_call_method(cls):
 
         os.makedirs("output", exist_ok=True)
 
-        # _setup is likely overridden by an derived class
-        self._setup(material, **kwargs)
         # resolve dependencies
         # since input to calculate may depend on output, return kwargs
-        kwargs = self._resolve_dependencies(**kwargs)
+        material_relaxed, kwargs = self._resolve_dependencies(material, **kwargs)
+
+        self._setup(material_relaxed, **kwargs)
 
         # implemented by each individual Test Driver
         self._calculate(**kwargs)
