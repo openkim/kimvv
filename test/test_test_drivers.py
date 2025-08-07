@@ -20,7 +20,7 @@ MODELS = [
     LennardJones(sigma=2.42324, epsilon=2.30580, rc=9.69298),
 ]
 
-test_tuples = [(driver, model) for driver in DRIVERS for model in MODELS][-3:] # take vacancy tests
+test_tuples = [(driver, model) for driver in DRIVERS for model in MODELS]
 
 
 @pytest.mark.parametrize("td_name,model", test_tuples)
