@@ -28,6 +28,10 @@ class KIMVVTestDriver:
             # is this fragile?
             self._update_nominal_parameter_values(ecs_test._get_atoms())
             return kwargs
+          
+    @classmethod
+    def printdoc(cls):
+        print(cls._calculate.__doc__)
 
 # new call decorator
 def override_call_method(cls):
