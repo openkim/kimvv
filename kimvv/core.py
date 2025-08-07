@@ -4,7 +4,8 @@ from typing import Any
 
 import kim_edn
 
-import kimvv 
+import kimvv
+
 
 class KIMVVTestDriver:
     @property
@@ -14,24 +15,25 @@ class KIMVVTestDriver:
         return kim_edn.load(os.path.join(mypath, myname, "kimspec.edn"))
 
     def _resolve_dependencies(self, **kwargs):
-        '''
-        defaults to equilibrium but can be defined within 
+        """
+        defaults to equilibrium but can be defined within
         TestDriver for driver specific needs
-        '''
+        """
         # updates kwargs if needed and returns
         if isinstance(self, kimvv.EquilibriumCrystalStructure):
             return kwargs
         else:
-            print ("Resolving dependencies...")
+            print("Resolving dependencies...")
             ecs_test = kimvv.EquilibriumCrystalStructure(self._calc)
             ecs_test(self._get_atoms())
             # is this fragile?
             self._update_nominal_parameter_values(ecs_test._get_atoms())
             return kwargs
-          
+
     @classmethod
     def printdoc(cls):
         print(cls._calculate.__doc__)
+
 
 # new call decorator
 def override_call_method(cls):
@@ -70,6 +72,6 @@ def override_call_method(cls):
         # The current invocation returns a Python list of dictionaries containing all
         # properties computed during this run
         return self.property_instances[previous_properties_end:]
-        
+
     cls.__call__ = __call__
     return cls
