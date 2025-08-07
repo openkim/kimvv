@@ -152,13 +152,17 @@ if __name__ == "__main__":
 
     # write __init__.py
     with open("kimvv/__init__.py", "w") as f:
-        f.write("from .core import KIMVVTestDriver\n")
+        # import call decorator
+        f.write("from .core import KIMVVTestDriver, override_call_method\n")
         for td in kimvv_test_drivers:
             f.write(f"from .{td}.test_driver.test_driver import TestDriver as __{td}\n")
+
 
         f.write("\n\n")
 
         for td in kimvv_test_drivers:
+            # add call decorator
+            f.write("@override_call_method\n")
             f.write(f"class {td}(__{td}, KIMVVTestDriver):\n    pass\n\n\n")
 
         f.write("__all__ = [\n")
