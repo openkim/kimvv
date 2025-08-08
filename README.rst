@@ -23,34 +23,30 @@ Basic usage example:
 
 .. code-block:: python
 
-    from kimvv import EquilibriumCrystalStructure, ElasticConstantsCrystal
+    from kimvv import ElasticConstantsCrystal
     from ase.build import bulk
     from json import dumps
 
-    # If a string is passed when instantiating the class, it is assumed to be a KIM model name
-    relax = EquilibriumCrystalStructure('LennardJones_Ar')
+    # The Test Driver must be instantiated with an ASE Calculator object 
+    # or a string indicating a KIM model name
+    relax = ElasticConstantsCrystal('LennardJones_Ar')
 
-    # Every Test Driver is able to take an Atoms object
-    relax(bulk('Ar','fcc',5.0))
+    # To perform the computation, call the Test Driver object. The first argument
+    # to most Test Drivers is the crystal structure to perform the compuation on.
+    # To see the additonal arguments, use .printdoc() to print the docstring
+    relax.printdoc()
 
-    # Access the list of dictionaries containing the material properties reported by the Test Driver
-    print(dumps(relax.property_instances,indent=2))
+    # Let's compute the elastic constants with the "stress-condensed" method.
+    # The crystal structure can be specified as an Atoms object. Any dependencies
+    # (e.g. relaxing the crystal structure with EquilibriumCrystalStructure) are
+    # automatically run.
+    results = relax(bulk('Ar','fcc',5.0), method="stress-condensed")
 
-    # All Test Drivers besides EquilibriumCrystalStructure expect to be
-    # passed a relaxed structure. This can be either a relaxed Atoms
-    # object, or a results dictionary from an EquilibriumCrystalStructure
-    # run. Any element of the list returned by EquilibriumCrystalStructure
-    # will do, as they all contain a description of the crystal structure
-    elastic = ElasticConstantsCrystal('LennardJones_Ar')
-    elastic(relax.property_instances[0])
-    print(dumps(elastic.property_instances,indent=2))
-
-    # You can also use a generic ASE calculator (as long as the Test Driver only uses ASE for calculations,
-    # i.e. this will not work for Test Drivers that do MD using LAMMPS)
-    # In this case you don't even need kimpy or the KIM API installed.
-    from ase.calculators.lj import LennardJones
-    relax = EquilibriumCrystalStructure(LennardJones(sigma=3.4,epsilon=0.0104,rc=8.15))
-    relax(bulk('Ar','fcc',5.0))
+    # Each Test Driver computes a list of one or more dictionaries, each defining
+    # a material property in the format specified by the KIM Properties Framework.
+    # The name of the property is in the "property-id" key. See 
+    # https://openkim.org/properties for the definition of each property.
+    print(dumps(results, indent=2))
 
 
 Usage example 2
@@ -81,6 +77,6 @@ Querying for all DFT-relaxed structures for a given combination of elements in O
     for struct in unique_structs:
       relax(struct)
 
-    # Access the results as a dictionary. For each structure, there are 3 properties
-    # (structure, binding energy, density)
-    print(dumps(relax.property_instances,indent=2))
+    # In addition to returning the Property Instances for the current run, Test Drivers
+    # accumulate all computed Property Instances. They can be accessed like this:
+    print(dumps(relax.property_instances, indent=2))
