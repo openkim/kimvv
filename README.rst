@@ -27,7 +27,7 @@ Basic usage example:
     from ase.build import bulk
     from json import dumps
 
-    # The Test Driver must be instantiated with an ASE Calculator object 
+    # The Test Driver must be instantiated with an ASE Calculator object
     # or a string indicating a KIM model name
     relax = ElasticConstantsCrystal('LennardJones_Ar')
 
@@ -44,7 +44,7 @@ Basic usage example:
 
     # Each Test Driver computes a list of one or more dictionaries, each defining
     # a material property in the format specified by the KIM Properties Framework.
-    # The name of the property is in the "property-id" key. See 
+    # The name of the property is in the "property-id" key. See
     # https://openkim.org/properties for the definition of each property.
     print(dumps(results, indent=2))
 
