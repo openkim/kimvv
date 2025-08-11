@@ -13,6 +13,7 @@ import tomlkit
 OPENKIM_TEST_DRIVERS = {
     "EquilibriumCrystalStructure__TD_457028483760_003": {"steps": 10},
     "ElasticConstantsCrystal__TD_034002468289_001": {},
+    "CrystalStructureAndEnergyVsPressure__TD_685283176869_000": {},
 }
 
 # List of URLs of development Test Drivers to test

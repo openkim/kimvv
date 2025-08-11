@@ -15,6 +15,7 @@ List of included Test Drivers:
 
   * EquilibriumCrystalStructure
   * ElasticConstantsCrystal
+  * CrystalStructureAndEnergyVsPressure
 
 Currently, all Test Drivers require the AFLOW software to be installed and in your PATH. See https://kim-tools.readthedocs.io/en/stable/#doc-standalone-installation for installation info.
 
