@@ -56,7 +56,7 @@ jobs:
           brew tap aflow-org/aflow
           brew install aflow
 
-      - name: Run pre-setup and unstall
+      - name: Run pre-setup and install
         shell: bash -el {0}
         run: |
           python pre_setup.py
