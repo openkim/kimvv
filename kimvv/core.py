@@ -1,3 +1,4 @@
+import inspect
 import os
 import pathlib
 from typing import Any
@@ -5,6 +6,15 @@ from typing import Any
 import kim_edn
 
 import kimvv
+
+
+def get_default_args(func):
+    signature = inspect.signature(func)
+    return {
+        k: v.default
+        for k, v in signature.parameters.items()
+        if v.default is not inspect.Parameter.empty
+    }
 
 
 class KIMVVTestDriver:
@@ -34,7 +44,11 @@ class KIMVVTestDriver:
 
     @classmethod
     def printdoc(cls):
+        print("\nDescription of method and non-structure arguments:\n")
         print(cls._calculate.__doc__)
+        print("\nDefaults:")
+        print(get_default_args(cls._calculate))
+        print()
 
 
 # new call decorator

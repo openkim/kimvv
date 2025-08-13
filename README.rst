@@ -30,18 +30,18 @@ Basic usage example:
 
     # The Test Driver must be instantiated with an ASE Calculator object
     # or a string indicating a KIM model name
-    relax = ElasticConstantsCrystal('LennardJones_Ar')
+    elast = ElasticConstantsCrystal('LennardJones_Ar')
 
     # To perform the computation, call the Test Driver object. The first argument
     # to most Test Drivers is the crystal structure to perform the compuation on.
     # To see the additonal arguments, use .printdoc() to print the docstring
-    relax.printdoc()
+    elast.printdoc()
 
     # Let's compute the elastic constants with the "stress-condensed" method.
     # The crystal structure can be specified as an Atoms object. Any dependencies
     # (e.g. relaxing the crystal structure with EquilibriumCrystalStructure) are
     # automatically run.
-    results = relax(bulk('Ar','fcc',5.0), method="stress-condensed")
+    results = elast(bulk('Ar','fcc',5.0), method="stress-condensed")
 
     # Each Test Driver computes a list of one or more dictionaries, each defining
     # a material property in the format specified by the KIM Properties Framework.
@@ -51,6 +51,40 @@ Basic usage example:
 
 
 Usage example 2
+---------------
+Getting the anisotropic pressure-volume curve of HCP Ag using a non-KIM ASE Calculator and saving
+the output files
+
+.. code-block:: python
+
+    from kimvv import CrystalStructureAndEnergyVsPressure
+    from ase.build import bulk
+    from ase.calculators.emt import EMT
+    from json import dumps
+
+    # The Test Driver must be instantiated with an ASE Calculator object
+    # or a string indicating a KIM model name
+    scan = CrystalStructureAndEnergyVsPressure(EMT())
+
+    # To perform the computation, call the Test Driver object. The first argument
+    # to most Test Drivers is the crystal structure to perform the compuation on.
+    # To see the additonal arguments, use .printdoc() to print the docstring
+    scan.printdoc()
+
+    # The default volume range of 0.25-4.0 will take a long time to scan. Let's
+    # do a much smaller range
+    results = scan(
+        bulk("Ag", "hcp", 2.92), min_fractional_volume=0.98, max_fractional_volume=1.02
+    )
+
+    # In addition to accessing the results as a Python dictionary, you can save them to
+    # a file in .edn format. This is especially useful if the Test Driver produces
+    # auxiliary files, like the pressure scan does. All auxiliary files will be written
+    # to the parent directory of the path you specified.
+    scan.write_property_instances_to_file("scan_output/results.edn")
+
+
+Usage example 3
 ---------------
 Querying for all DFT-relaxed structures for a given combination of elements in OpenKIM and relaxing them with your potential
 
