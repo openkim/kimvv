@@ -24,6 +24,7 @@ These prerequisites are decribed in installation info for ``kim-tools``, the bac
 
 Basic usage example:
 --------------------
+Computing elastic constants for FCC argon using an example KIM potential
 
 .. code-block:: python
 
