@@ -19,7 +19,7 @@ List of included Test Drivers:
 
 Installation
 ------------
-``kimvv`` is installable using ``pip``: ``pip install kimvv``, but it requires some non-Python rquirements to be installed first.
+``kimvv`` is installable with ``pip install kimvv``, but it requires some non-Python rquirements to be installed first.
 These prerequisites are decribed in installation info for ``kim-tools``, the backend for ``kimvv``, here: https://kim-tools.readthedocs.io/en/stable/#doc-standalone-installation.
 
 Basic usage example:
