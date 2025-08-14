@@ -38,14 +38,17 @@ Computing elastic constants for FCC argon using an example KIM potential
 
     # To perform the computation, call the Test Driver object. The first argument
     # to most Test Drivers is the crystal structure to perform the computation on.
-    # To see the additonal arguments, use .printdoc() to print the docstring
+    # To see an explanation of the calculation and a description of the
+    # additonal arguments, use .printdoc()
     elast.printdoc()
 
-    # Let's compute the elastic constants with the "stress-condensed" method.
+    # For the sake of speed, let's compute the elastic constants with the
+    # "stress-condensed" method, instead of the default robust computation loop.
     # The crystal structure can be specified as an Atoms object. Any dependencies
     # (e.g. relaxing the crystal structure with EquilibriumCrystalStructure) are
     # automatically run.
-    results = elast(bulk('Ar','fcc',5.0), method="stress-condensed")
+    atoms = bulk("Ar", "fcc", 5.0)
+    results = elast(atoms, method="stress-condensed")
 
     # Each Test Driver computes a list of one or more dictionaries, each defining
     # a material property in the format specified by the KIM Properties Framework.
