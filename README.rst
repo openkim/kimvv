@@ -37,7 +37,7 @@ Computing elastic constants for FCC argon using an example KIM potential
     elast = ElasticConstantsCrystal('LennardJones_Ar')
 
     # To perform the computation, call the Test Driver object. The first argument
-    # to most Test Drivers is the crystal structure to perform the compuation on.
+    # to most Test Drivers is the crystal structure to perform the computation on.
     # To see the additonal arguments, use .printdoc() to print the docstring
     elast.printdoc()
 
