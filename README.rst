@@ -17,7 +17,10 @@ List of included Test Drivers:
   * ElasticConstantsCrystal
   * CrystalStructureAndEnergyVsPressure
 
-Currently, all Test Drivers require the AFLOW software to be installed and in your PATH. See https://kim-tools.readthedocs.io/en/stable/#doc-standalone-installation for installation info.
+Installation
+------------
+``kimvv`` is installable using ``pip``: ``pip install kimvv``, but it requires some non-Python rquirements to be installed first.
+These prerequisites are decribed in installation info for ``kim-tools``, the backend for ``kimvv``, here: https://kim-tools.readthedocs.io/en/stable/#doc-standalone-installation.
 
 Basic usage example:
 --------------------
