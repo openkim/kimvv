@@ -24,6 +24,8 @@ OPENKIM_TEST_DRIVERS = {
 # List of URLs of development Test Drivers to test
 DEVEL_TEST_DRIVERS = {}
 
+MAX_URLLIB_ATTEMPTS = 5
+
 
 def create_init(td_root_path: os.PathLike):
     for name in os.listdir(td_root_path):
@@ -46,6 +48,18 @@ def move_driver(prefix: str, source_dir: os.PathLike):
     create_init(final_path_to_driver)
 
 
+def urlretrieve_with_retries(url) -> str:
+    for _ in range(MAX_URLLIB_ATTEMPTS):
+        try:
+            tmpfile, _ = urlretrieve(url)
+            return tmpfile
+        except HTTPError:
+            pass
+    raise RuntimeError(
+        f"Failed to download {url}" f" after {MAX_URLLIB_ATTEMPTS} attempts."
+    )
+
+
 if __name__ == "__main__":
     kimvv_test_drivers = {}
 
@@ -57,7 +71,7 @@ if __name__ == "__main__":
         prefix = "_".join(test_driver.split("_")[:-4])
         # Store the dict of kwargs in the "kimvv_test_drivers" dictionary
         kimvv_test_drivers[prefix] = OPENKIM_TEST_DRIVERS[test_driver]
-        tmpfile, _ = urlretrieve(url)
+        tmpfile = urlretrieve_with_retries(url)
         # Extract it and move it to kimvv directory
         with tarfile.open(tmpfile, "r:xz") as f:
             f.extractall()
@@ -65,7 +79,7 @@ if __name__ == "__main__":
 
     # Download and untar development TDs
     for test_driver in DEVEL_TEST_DRIVERS:
-        tmpfile, _ = urlretrieve(test_driver)
+        tmpfile = urlretrieve_with_retries(test_driver)
         # Extract it to a temporary directory
         with TemporaryDirectory() as tmpdir:
             with tarfile.open(tmpfile, "r:gz") as f:
@@ -129,32 +143,31 @@ if __name__ == "__main__":
         else:
             # Look up developer on openkim.org
             for developer in kimspec["developer"]:
-                max_attempts = 5
-                for i in range(max_attempts):  # 5 retry attempts
+                for i in range(MAX_URLLIB_ATTEMPTS):
                     try:
                         with urlopen(
                             f"https://openkim.org/profile/{developer}.json"
                         ) as u:
                             developer_profile = json.load(u)
-                            name = (
-                                developer_profile["first-name"]
-                                + " "
-                                + developer_profile["last-name"]
-                            )
-                            if any(
-                                name.lower() in author["name"].lower()
-                                for author in pyproject["project"]["authors"]
-                            ):
-                                continue
-                            pyproject["project"]["authors"].append({"name": name})
-                            break
+                        break
                     except HTTPError:
                         pass
-                if i == 4:
+                if i == MAX_URLLIB_ATTEMPTS - 1:
                     raise RuntimeError(
                         "Failed to get developer info from openkim.org for "
-                        f"{developer} after {max_attempts} attempts."
+                        f"{developer} after {MAX_URLLIB_ATTEMPTS} attempts."
                     )
+                name = (
+                    developer_profile["first-name"]
+                    + " "
+                    + developer_profile["last-name"]
+                )
+                if any(
+                    name.lower() in author["name"].lower()
+                    for author in pyproject["project"]["authors"]
+                ):
+                    continue
+                pyproject["project"]["authors"].append({"name": name})
 
         manifest_path = os.path.join(driver_path, "MANIFEST.in")
         if os.path.isfile(manifest_path):
