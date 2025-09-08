@@ -4,6 +4,7 @@ import shutil
 import tarfile
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from urllib.error import HTTPError
 from urllib.request import urlopen, urlretrieve
 
 import kim_edn
@@ -128,19 +129,32 @@ if __name__ == "__main__":
         else:
             # Look up developer on openkim.org
             for developer in kimspec["developer"]:
-                with urlopen(f"https://openkim.org/profile/{developer}.json") as u:
-                    developer_profile = json.load(u)
-                    name = (
-                        developer_profile["first-name"]
-                        + " "
-                        + developer_profile["last-name"]
+                max_attempts = 5
+                for i in range(max_attempts):  # 5 retry attempts
+                    try:
+                        with urlopen(
+                            f"https://openkim.org/profile/{developer}.json"
+                        ) as u:
+                            developer_profile = json.load(u)
+                            name = (
+                                developer_profile["first-name"]
+                                + " "
+                                + developer_profile["last-name"]
+                            )
+                            if any(
+                                name.lower() in author["name"].lower()
+                                for author in pyproject["project"]["authors"]
+                            ):
+                                continue
+                            pyproject["project"]["authors"].append({"name": name})
+                            break
+                    except HTTPError:
+                        pass
+                if i == 4:
+                    raise RuntimeError(
+                        "Failed to get developer info from openkim.org for "
+                        f"{developer} after {max_attempts} attempts."
                     )
-                    if any(
-                        name.lower() in author["name"].lower()
-                        for author in pyproject["project"]["authors"]
-                    ):
-                        continue
-                    pyproject["project"]["authors"].append({"name": name})
 
         manifest_path = os.path.join(driver_path, "MANIFEST.in")
         if os.path.isfile(manifest_path):
