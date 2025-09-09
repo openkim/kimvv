@@ -5,7 +5,7 @@ import tarfile
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from urllib.error import HTTPError
-from urllib.request import urlopen, urlretrieve
+from urllib.request import urlcleanup, urlretrieve
 
 import kim_edn
 import tomlkit
@@ -143,20 +143,11 @@ if __name__ == "__main__":
         else:
             # Look up developer on openkim.org
             for developer in kimspec["developer"]:
-                for i in range(MAX_URLLIB_ATTEMPTS):
-                    try:
-                        with urlopen(
-                            f"https://openkim.org/profile/{developer}.json"
-                        ) as u:
-                            developer_profile = json.load(u)
-                        break
-                    except HTTPError:
-                        pass
-                if i == MAX_URLLIB_ATTEMPTS - 1:
-                    raise RuntimeError(
-                        "Failed to get developer info from openkim.org for "
-                        f"{developer} after {MAX_URLLIB_ATTEMPTS} attempts."
-                    )
+                tmpfile = urlretrieve_with_retries(
+                    f"https://openkim.org/profile/{developer}.json"
+                )
+                with open(tmpfile) as f:
+                    developer_profile = json.load(f)
                 name = (
                     developer_profile["first-name"]
                     + " "
@@ -168,6 +159,8 @@ if __name__ == "__main__":
                 ):
                     continue
                 pyproject["project"]["authors"].append({"name": name})
+
+        urlcleanup()
 
         manifest_path = os.path.join(driver_path, "MANIFEST.in")
         if os.path.isfile(manifest_path):
