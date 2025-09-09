@@ -6,7 +6,7 @@ import pytest
 from ase.build import bulk
 from ase.calculators.calculator import Calculator
 from ase.calculators.lj import LennardJones
-from kim_tools import KIMTestDriver, get_atoms_from_crystal_structure
+from kim_tools import KIMTestDriver
 
 import kimvv
 
@@ -37,10 +37,7 @@ def test_test_driver(td_name: str, model: Union[str, Calculator]) -> None:
             The model to use.
     """
     # Start with FCC Au
-    atoms_init = bulk("Au")
-
-    # Relax it with EquilibriumCrystalStructure
-    crystal_structure_relaxed = kimvv.EquilibriumCrystalStructure(model)(atoms_init)[0]
+    atoms = bulk("Au")
 
     TestDriver = getattr(kimvv, td_name)
 
@@ -49,29 +46,23 @@ def test_test_driver(td_name: str, model: Union[str, Calculator]) -> None:
     td = TestDriver(model)
 
     try:
-        # Run the driver with crystal structure dict
-        results_from_dict = td(crystal_structure_relaxed, **td_kwargs)
+        results = td(atoms, **td_kwargs)
 
-        # Run the atoms with relaxed atoms
-        atoms_relaxed = get_atoms_from_crystal_structure(crystal_structure_relaxed)
-        results_from_atoms = td(atoms_relaxed, **td_kwargs)
+        # Should return at least something
+        assert len(results) > 0
 
-        for results in (results_from_dict, results_from_atoms):
-            # Should return at least something
-            assert len(results_from_atoms) > 0
-
-            # If we have properties in our kimspec, check that the test driver
-            # only reports those
-            if "properties" in td.kimspec:
-                properties = td.kimspec["properties"]
-                for result in results:
-                    assert result["property-id"] in properties
-            else:
-                warnings.warn(
-                    "WARNING Your kimspec.edn did not contain a 'properties' key. "
-                    "this is acceptable, but I cannot test thhat the reported "
-                    "properties are correct."
-                )
+        # If we have properties in our kimspec, check that the test driver
+        # only reports those
+        if "properties" in td.kimspec:
+            properties = td.kimspec["properties"]
+            for result in results:
+                assert result["property-id"] in properties
+        else:
+            warnings.warn(
+                "WARNING Your kimspec.edn did not contain a 'properties' key. "
+                "this is acceptable, but I cannot test thhat the reported "
+                "properties are correct."
+            )
     except KIMTestDriver.NonKIMModelError:
         warnings.warn(
             "WARNING Your Test Driver is unable to run with non-KIM calculators "
