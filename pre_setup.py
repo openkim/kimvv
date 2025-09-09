@@ -24,7 +24,7 @@ OPENKIM_TEST_DRIVERS = {
 # List of URLs of development Test Drivers to test
 DEVEL_TEST_DRIVERS = {}
 
-MAX_URLLIB_ATTEMPTS = 5
+MAX_URLLIB_ATTEMPTS = 10
 
 
 def create_init(td_root_path: os.PathLike):
