@@ -62,6 +62,7 @@ def urlretrieve_with_retries(url) -> str:
 
 if __name__ == "__main__":
     kimvv_test_drivers = {}
+    kimvv_test_inputs = {}
 
     # Download and untar production OpenKIM TDs
     for test_driver in OPENKIM_TEST_DRIVERS:
@@ -71,6 +72,11 @@ if __name__ == "__main__":
         prefix = "_".join(test_driver.split("_")[:-4])
         # Store the dict of kwargs in the "kimvv_test_drivers" dictionary
         kimvv_test_drivers[prefix] = OPENKIM_TEST_DRIVERS[test_driver]
+        if DEVEL_TEST_DRIVERS == {}:
+            # Assume that if you are testing devel Test Drivers, you have no
+            # reason to re-run the production ones. Still download and install
+            # them as they might be dependencies.
+            kimvv_test_inputs[prefix] = OPENKIM_TEST_DRIVERS[test_driver]
         tmpfile = urlretrieve_with_retries(url)
         # Extract it and move it to kimvv directory
         with tarfile.open(tmpfile, "r:xz") as f:
@@ -114,10 +120,11 @@ if __name__ == "__main__":
 
             print(f"Importing from \n{test_driver}\n and naming it {td_name}")
             kimvv_test_drivers[td_name] = DEVEL_TEST_DRIVERS[test_driver]
+            kimvv_test_inputs[td_name] = DEVEL_TEST_DRIVERS[test_driver]
             move_driver(td_name, td_root_path)
 
     with open("test/test_inputs.json", "w") as f:
-        json.dump(kimvv_test_drivers, f)
+        json.dump(kimvv_test_inputs, f)
 
     with open("pyproject.toml.tpl") as f_pyproject:
         pyproject = tomlkit.parse(f_pyproject.read())
