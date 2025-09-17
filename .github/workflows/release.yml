@@ -28,3 +28,6 @@ jobs:
         python -m build
     - name: Publish package
       uses: pypa/gh-action-pypi-publish@release/v1.12
+  send-pull-request:
+    uses: openkim/developer-platform/.github/workflows/upversion-pypi-package-and-send-pr.yml@main
+    secrets: inherit
