@@ -53,8 +53,8 @@ def test_test_driver(td_name: str, model: Union[str, Calculator]) -> None:
 
         # If we have properties in our kimspec, check that the test driver
         # only reports those
-        if "properties" in td.kimspec:
-            properties = td.kimspec["properties"]
+        if "properties" in td.get_kimspec():
+            properties = td.get_kimspec()["properties"]
             for result in results:
                 assert result["property-id"] in properties
         else:
