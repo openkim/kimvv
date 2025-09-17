@@ -18,10 +18,10 @@ def get_default_args(func):
 
 
 class KIMVVTestDriver:
-    @property
-    def kimspec(self):
+    @classmethod
+    def get_kimspec(cls):
         mypath = pathlib.Path(__file__).parent.resolve()
-        myname = self.__class__.__name__
+        myname = cls.__name__
         return kim_edn.load(os.path.join(mypath, myname, "kimspec.edn"))
 
     def _resolve_dependencies(self, material, **kwargs):
