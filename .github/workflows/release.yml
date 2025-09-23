@@ -28,7 +28,11 @@ jobs:
         python -m build
     - name: Publish package
       uses: pypa/gh-action-pypi-publish@release/v1.12
-  send-pull-requests:
-    uses: ilia-nikiforov-umn/gh-actions-playground/.github/workflows/upversion-package-and-send-pr.yml@main
+  send-pull-request-to-kdp:
+    uses: openkim/reusable-workflows/.github/workflows/upversion-pypi-package-and-send-pr.yml@main
     secrets: inherit
+    with:
+      target-repository: developer-platform
+      target-repository-base-branch: main
+      recipe-file-path: docker/install/Dockerfile
     needs: deploy
