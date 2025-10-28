@@ -77,18 +77,22 @@ if __name__ == "__main__":
             # reason to re-run the production ones. Still download and install
             # them as they might be dependencies.
             kimvv_test_inputs[prefix] = OPENKIM_TEST_DRIVERS[test_driver]
-        tmpfile = urlretrieve_with_retries(url)
+        driver_archive = urlretrieve_with_retries(url)
         # Extract it and move it to kimvv directory
-        with tarfile.open(tmpfile, "r:xz") as f:
+        with tarfile.open(driver_archive, "r:xz") as f:
             f.extractall()
         move_driver(prefix, test_driver)
 
     # Download and untar development TDs
     for test_driver in DEVEL_TEST_DRIVERS:
-        tmpfile = urlretrieve_with_retries(test_driver)
+        if os.path.isfile(test_driver):
+            driver_archive = test_driver
+        else:
+            print(f"{test_driver} does not appear to be a file, assuming it is a URL")
+            driver_archive = urlretrieve_with_retries(test_driver)
         # Extract it to a temporary directory
         with TemporaryDirectory() as tmpdir:
-            with tarfile.open(tmpfile, "r:gz") as f:
+            with tarfile.open(driver_archive) as f:
                 f.extractall(tmpdir)
             # Find the kimspec.edn
             kimspec_match = Path(tmpdir).rglob("kimspec.edn")
@@ -150,10 +154,10 @@ if __name__ == "__main__":
         else:
             # Look up developer on openkim.org
             for developer in kimspec["developer"]:
-                tmpfile = urlretrieve_with_retries(
+                driver_archive = urlretrieve_with_retries(
                     f"https://openkim.org/profile/{developer}.json"
                 )
-                with open(tmpfile) as f:
+                with open(driver_archive) as f:
                     developer_profile = json.load(f)
                 name = (
                     developer_profile["first-name"]
