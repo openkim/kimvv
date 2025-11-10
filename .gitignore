@@ -1,5 +1,5 @@
 scratch*
-output/
+output*/
 test/test_inputs.json
 
 # Actual package directory always created

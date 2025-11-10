@@ -15,8 +15,8 @@ with open("test_inputs.json") as f:
 
 # Test on FCC Au
 MODELS = [
-    "LennardJones612_UniversalShifted__MO_959249795837_003",
-    "Sim_LAMMPS_LJcut_AkersonElliott_Alchemy_PbAu",
+    "LJ_ElliottAkerson_2015_Universal__MO_959249795837_003",
+    "Sim_LAMMPS_ADP_StarikovGordeevLysogorskiy_2020_SiAuAl__SM_113843830602_000",
     LennardJones(sigma=2.42324, epsilon=2.30580, rc=9.69298),
 ]
 

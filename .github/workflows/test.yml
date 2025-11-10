@@ -18,7 +18,7 @@ jobs:
   test:
     strategy:
       matrix:
-        os: [ubuntu-22.04, macos-13]
+        os: [ubuntu-22.04, macos-15, macos-15-intel]
 
     runs-on: ${{ matrix.os }}
 
@@ -35,26 +35,22 @@ jobs:
           create-args: >-
             -f test/environment.yml
 
-      - name: Install units
+      - name: Install units and AFLOW on Linux
         if: runner.os == 'Linux'
         shell: bash -el {0}
         run: |
           sudo apt-get update
           sudo apt-get -y install units
-
-      - name: Install AFLOW on Linux
-        if: runner.os == 'Linux'
-        shell: bash -el {0}
-        run: |
           wget https://github.com/aflow-org/aflow/releases/download/v4.0.5/aflow-4.0.5-ubuntu22-amd64.tar.gz
           tar -xf aflow-4.0.5-ubuntu22-amd64.tar.gz
 
-      - name: Install AFLOW on macOS
+      - name: Install units and AFLOW on macOS
         if: runner.os == 'macOS'
         shell: bash -el {0}
         run: |
           brew tap aflow-org/aflow
           brew install aflow
+          brew install gnu-units
 
       - name: Run pre-setup and install
         shell: bash -el {0}

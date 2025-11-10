@@ -1,6 +1,8 @@
 import inspect
 import os
 import pathlib
+import shutil
+from tempfile import TemporaryDirectory
 from typing import Any
 
 import kim_edn
@@ -58,10 +60,12 @@ def override_call_method(cls):
         Taken from kim-tools with added dependency functionality
         Main operation of a Test Driver:
 
+            * Call :func:`~KIMTestDriver._init_output_dir`
             * Run :func:`~KIMTestDriver._setup` (the base class provides a barebones
               version, derived classes may override)
             * Call :func:`~KIMTestDriver._calculate` (implemented by each individual
               Test Driver)
+            * Call :func:`~KIMTestDriver._archive_aux_files`
 
         Args:
             material:
@@ -74,16 +78,42 @@ def override_call_method(cls):
         # count how many instances we had before we started
         previous_properties_end = len(self.property_instances)
 
-        os.makedirs("output", exist_ok=True)
+        # Set up the output directory
+        self._init_output_dir()
 
-        # resolve dependencies
-        # since input to calculate may depend on output, return kwargs
-        material_relaxed, kwargs = self._resolve_dependencies(material, **kwargs)
+        with TemporaryDirectory() as d:
+            original_output_bak = shutil.move("output", d)
+            try:
+                # resolve dependencies
+                # since input to calculate may depend on output, return kwargs
+                material_relaxed, kwargs = self._resolve_dependencies(
+                    material, **kwargs
+                )
+            finally:
+                # Dependencies wrote an output directory
+                if os.path.exists("output"):
+                    i = 0
+                    while os.path.exists(f"output.dependency.{i}"):
+                        i += 1
+                    dep_output_bak = f"output.dependency.{i}"
+                    msg = (
+                        "Backing up 'output' directory written by dependency to "
+                        f"{dep_output_bak}"
+                    )
+                    print(msg)
+                    os.rename("output", dep_output_bak)
+                # restore original output
+                shutil.move(original_output_bak, ".")
 
-        self._setup(material_relaxed, **kwargs)
+        try:
+            # _setup is likely overridden by an derived class
+            self._setup(material_relaxed, **kwargs)
 
-        # implemented by each individual Test Driver
-        self._calculate(**kwargs)
+            # implemented by each individual Test Driver
+            self._calculate(**kwargs)
+        finally:
+            # Postprocess output directory for this invocation
+            self._archive_aux_files()
 
         # The current invocation returns a Python list of dictionaries containing all
         # properties computed during this run
