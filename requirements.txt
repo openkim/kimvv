@@ -1,2 +1,3 @@
 kim_edn
 kim_property>=2.6.11
+kim_tools>=0.4.3
