@@ -19,6 +19,8 @@ OPENKIM_TEST_DRIVERS = {
         "exp_step": 1.5,
         "min_steps": 10,
     },
+    "GroundStateCrystalStructure__TD_099540502402_000": {},
+    "VacancyFormationEnergyRelaxationVolumeCrystal__TD_075370685332_000": {},
 }
 
 # List of URLs of development Test Drivers to test
