@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "kimvv"
-version = "0.1.7"
+version = "0.1.8"
 dynamic = ["dependencies", "readme"]
 authors = [
     { name = "ilia Nikiforov <nikif002@umn.edu>" },
