@@ -36,7 +36,7 @@ class KIMVVTestDriver:
             return material, kwargs
         else:
             print("Resolving dependencies...")
-            ecs_test = kimvv.EquilibriumCrystalStructure(self._calc)
+            ecs_test = kimvv.EquilibriumCrystalStructure(self.model)
             ecs_results = ecs_test(material)
             for result in ecs_results:
                 if result["property-id"].endswith("crystal-structure-npt"):
