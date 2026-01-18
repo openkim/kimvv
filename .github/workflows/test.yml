@@ -57,6 +57,7 @@ jobs:
         run: |
           mkdir local-python
           export PIP_TARGET=$PWD/local-python
+          echo "PYTHONPATH=$PYTHONPATH:$PIP_TARGET" >> "$GITHUB_ENV"
           python pre_setup.py
           python -m pip install .
           chmod -R -w local-python
