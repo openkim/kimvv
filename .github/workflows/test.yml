@@ -56,7 +56,18 @@ jobs:
         shell: bash -el {0}
         run: |
           python pre_setup.py
-          python -m pip install .
+          # Install kimvv only into a special directory that we make unwriteable to mimic a system install
+          # This is to make sure test drivers don't need to write to their own files to run
+          mkdir local-python
+          python -m pip install . -t local-python --no-deps
+          chmod -R -w local-python
+
+          # Now install any dependencies normally. If we install without --no-deps
+          # above, it would install ALL dependencies, including reinstalling
+          # stuff that already exists in the conda env
+          echo "PYTHONPATH=$PYTHONPATH:$PWD/local-python" >> "$GITHUB_ENV"
+          python -c "from importlib.metadata import requires; print(' '.join(requires('kimvv')))" | xargs python -m pip install
+
 
       - name: Run tests
         shell: bash -el {0}
