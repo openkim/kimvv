@@ -55,8 +55,11 @@ jobs:
       - name: Run pre-setup and install
         shell: bash -el {0}
         run: |
+          mkdir local-python
+          export PIP_TARGET=$PWD/local-python
           python pre_setup.py
           python -m pip install .
+          chmod -R -w local-python
 
       - name: Run tests
         shell: bash -el {0}
