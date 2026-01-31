@@ -17,6 +17,32 @@ def install_models():
                         "kim-api-collections-management",
                         "install",
                         "CWD",
+                        "LJ__MD_414112407348_003",
+                    ],
+                    check=True,
+                    capture_output=True,
+                    encoding="utf-8",
+                )
+            except subprocess.CalledProcessError as e:
+                if ("already installed" in e.output) or (
+                    "does not appear to contain CMakeLists.txt." in e.output
+                ):
+                    pass
+                else:
+                    raise e
+        except Exception as e:
+            print("Failed to download item with the following exception:\n" + repr(e))
+            print(f"Retrying in {INSTALL_RETRY_TIMEOUT} seconds...")
+            time.sleep(INSTALL_RETRY_TIMEOUT)
+            pass
+    for _ in range(MAX_INSTALL_ATTEMPTS):
+        try:
+            try:
+                subprocess.run(
+                    [
+                        "kim-api-collections-management",
+                        "install",
+                        "CWD",
                         "LJ_ElliottAkerson_2015_Universal__MO_959249795837_003",
                     ],
                     check=True,
