@@ -21,6 +21,8 @@ List of included Test Drivers:
 
 Installation
 ------------
+``kimvv`` and all requirements are available in the KIM Developer Platform (KDP) container available here: https://github.com/openkim/developer-platform
+
 ``kimvv`` is installable with ``pip install kimvv``, but it requires some non-Python rquirements to be installed first.
 These prerequisites are decribed in installation info for ``kim-tools``, the backend for ``kimvv``, here: https://kim-tools.readthedocs.io/en/stable/#doc-standalone-installation.
 
