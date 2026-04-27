@@ -41,8 +41,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get -y install units
-          wget https://github.com/aflow-org/aflow/releases/download/v4.0.5/aflow-4.0.5-ubuntu22-amd64.tar.gz
-          tar -xf aflow-4.0.5-ubuntu22-amd64.tar.gz
+          wget https://github.com/aflow-org/aflow/releases/download/v4.1/aflow-4.1-ubuntu22-amd64.tar.gz
+          tar -xf aflow-4.1-ubuntu22-amd64.tar.gz
 
       - name: Install units and AFLOW on macOS
         if: runner.os == 'macOS'
@@ -72,6 +72,6 @@ jobs:
       - name: Run tests
         shell: bash -el {0}
         run: |
-          export PATH=$PATH:$PWD/aflow-4.0.5-Linux/bin
+          export PATH=$PATH:$PWD/aflow-4.1.0-Linux/bin
           cd test
           pytest
