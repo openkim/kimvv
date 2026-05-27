@@ -21,6 +21,12 @@ OPENKIM_TEST_DRIVERS = {
     },
     "GroundStateCrystalStructure__TD_099540502402_000": {},
     "VacancyFormationEnergyRelaxationVolumeCrystal__TD_075370685332_000": {},
+    "NPTCrystalStructure__TD_995535260842_000": {
+        "temperature_K": 300,
+        "target_size": 1000,
+        "lammps_command": "mpirun -np 2 lmp",
+        "rlc_min_samples": 100,
+    },
 }
 
 # List of URLs of development Test Drivers to test

@@ -18,6 +18,7 @@ List of included Test Drivers:
   * CrystalStructureAndEnergyVsPressure
   * GroundStateCrystalStructure
   * VacancyFormationEnergyRelaxationVolumeCrystal
+  * NPTCrystalStructure
 
 Installation
 ------------
