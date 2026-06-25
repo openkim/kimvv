@@ -24,14 +24,14 @@ OPENKIM_TEST_DRIVERS = {
     "NPTCrystalStructure__TD_995535260842_000": {
         "temperature_K": 300,
         "target_size": 1000,
-        "lammps_command": "mpirun -np 2  --bind-to numa lmp",
+        "lammps_command": "mpirun -np 2 lmp",
         "rlc_min_samples": 100,
         "msd_timesteps": 1000,
     },
     "GibbsFreeEnergyCrystal__TD_199652920580_000": {
         "temperature_K": 300,
         "target_size": 1000,
-        "lammps_command": "mpirun -np 2  --bind-to numa lmp",
+        "lammps_command": "mpirun -np 2 lmp",
         "msd_timesteps": 1000,
     },
 }
