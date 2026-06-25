@@ -15,10 +15,11 @@ List of included Test Drivers:
 
   * EquilibriumCrystalStructure
   * ElasticConstantsCrystal
-  * CrystalStructureAndEnergyVsPressure
-  * GroundStateCrystalStructure
   * VacancyFormationEnergyRelaxationVolumeCrystal
+  * CrystalStructureAndEnergyVsPressure
+  * GibbsFreeEnergyCrystal
   * NPTCrystalStructure
+  * GroundStateCrystalStructure
 
 Installation
 ------------

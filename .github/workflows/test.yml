@@ -49,6 +49,7 @@ jobs:
         shell: bash -el {0}
         run: |
           brew tap aflow-org/aflow
+          brew trust --formula aflow-org/aflow/aflow
           brew install aflow
           brew install gnu-units
 
