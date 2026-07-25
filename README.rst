@@ -28,7 +28,7 @@ an ASE Calculator (not all Test Drivers support ASE Calculators):
   from kimvv import ElasticConstantsCrystal
   elast = ElasticConstantsCrystal('LennardJones_Ar')
 
-The object you now instantiated can be used to perform property calculations. You are required to provide a crystal structure, which can
+The object you instantiated can now be used to perform property calculations. You are required to provide a crystal structure, which can
 be specified as an ASE Atoms object (it is also possible to specify a symmetry-reduced crystallographic description, see examples below):
 
 .. code-block:: python
