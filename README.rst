@@ -19,7 +19,29 @@ List of included Test Drivers:
   * CrystalStructureAndEnergyVsPressure
   * GibbsFreeEnergyCrystal
   * NPTCrystalStructure
-  * GroundStateCrystalStructure
+
+To run one of these calculations, instantiate the class with an interatomic model, which can be a KIM potential installed on your system or
+an ASE Calculator (not all Test Drivers support ASE Calculators):
+
+.. code-block:: python
+
+  from kimvv import ElasticConstantsCrystal
+  elast = ElasticConstantsCrystal('LennardJones_Ar')
+
+The object you now instantiated can be used to perform property calculations. You are required to provide a crystal structure, which can
+be specified as an ASE Atoms object (it is also possible to specify a symmetry-reduced crystallographic description, see examples below):
+
+.. code-block:: python
+
+  from ase.build import bulk
+  atoms = bulk('Ar')
+  results = elast(atoms)
+
+Most Test Drivers accept other optional and/or required arguments. Use the ``printdoc`` method for an explanation of
+each Test Driver's operation, e.g. ``ElasticConstantsCrystal.printdoc()``. Besides the structure, all Test Drivers
+accept the universal argument ``temperature_K``, and the mutually exclusive ``pressure_eV_angstrom3`` and
+``cell_cauchy_stress_eV_angstrom3``. These are ignored by Test Drivers that are restricted zero temperature and/or
+stress-free conditions.
 
 Installation
 ------------
