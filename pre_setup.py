@@ -34,6 +34,12 @@ OPENKIM_TEST_DRIVERS = {
         "lammps_command": "mpirun -np 2 lmp",
         "msd_timesteps": 1000,
     },
+    "HeatCapacityThermalExpansionCrystalNPT__TD_167636467750_000": {
+        "temperature_K": 300,
+        "target_size": 1000,
+        "lammps_command": "mpirun -np 2 lmp",
+        "msd_timesteps": 1000,
+    },
 }
 
 # List of URLs of development Test Drivers to test
