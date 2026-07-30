@@ -44,6 +44,11 @@ accept the universal argument ``temperature_K``, and the mutually exclusive ``pr
 ``cell_cauchy_stress_eV_angstrom3``. These are ignored by Test Drivers that are restricted zero temperature and/or
 stress-free conditions.
 
+It is ***crucial*** that you inspect the ``printdoc`` output for the calculation you plan to run. The defaults are
+chosen for maximum compatibility *and* accuracy, which means they are likely not practical. For example, the default settings
+for most finite temperature Test Drivers will attempt to run a 10,000 atom simulation as a serial LAMMPS job. See examples
+below for examples of practical input sets.
+
 Installation
 ------------
 ``kimvv`` and all requirements are available in the KIM Developer Platform (KDP) container available here: https://github.com/openkim/developer-platform
@@ -85,11 +90,23 @@ Computing elastic constants for FCC argon using an example KIM potential
   # https://openkim.org/properties for the definition of each property.
   print(dumps(results, indent=2))
 
-
 Usage example 2
+-----------------------------------------------
+Computing heat capacity and thermal expansion coefficients of gold using an example KIM potential
+using a small system size running 3 LAMMPS processes using 2 CPUs each
+
+.. code-block:: python
+
+  from kimvv import HeatCapacityThermalExpansionCrystalNPT
+  from ase.build import bulk
+  atoms = bulk("Au")
+  td = HeatCapacityThermalExpansionCrystalNPT("Sim_LAMMPS_LJcut_AkersonElliott_Alchemy_PbAu")
+  result = td(atoms, temperature_K=300, target_size=1000, lammps_command="mpirun -np 2 --bind-to numa lmp", max_workers=3)
+
+
+Usage example 3
 ---------------
-Getting the anisotropic pressure-volume curve of HCP Ag using a non-KIM ASE Calculator and saving
-the output files
+Getting the anisotropic pressure-volume curve of HCP Ag using a non-KIM ASE Calculator
 
 .. code-block:: python
 
@@ -112,13 +129,7 @@ the output files
       bulk("Ag", "hcp", 2.92), min_fractional_volume=0.98, max_fractional_volume=1.02
   )
 
-  # In addition to accessing the results as a Python dictionary, you can save them to
-  # a file in .edn format. This is especially useful if the Test Driver produces
-  # auxiliary files, like the pressure scan does. All auxiliary files will be written
-  # to the parent directory of the path you specified.
-  scan.write_property_instances_to_file("scan_output/results.edn")
-
-Usage example 3
+Usage example 4
 ---------------
 This example is functionally identical to the previous example, except the crystal is specified by
 passing a dictionary specifying the symmetry-reduced description of the crystal
@@ -161,7 +172,7 @@ passing a dictionary specifying the symmetry-reduced description of the crystal
   results = scan(material, min_fractional_volume=0.98, max_fractional_volume=1.02)
   scan.write_property_instances_to_file("scan_output/results.edn")
 
-Usage example 4
+Usage example 5
 ---------------
 Querying for all DFT-relaxed structures for a given combination of elements in OpenKIM and relaxing them with your potential
 
