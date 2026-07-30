@@ -16,8 +16,9 @@ List of included Test Drivers:
   * EquilibriumCrystalStructure
   * ElasticConstantsCrystal
   * VacancyFormationEnergyRelaxationVolumeCrystal
-  * CrystalStructureAndEnergyVsPressure
+  * HeatCapacityThermalExpansionCrystalNPT
   * GibbsFreeEnergyCrystal
+  * CrystalStructureAndEnergyVsPressure
   * NPTCrystalStructure
 
 To run one of these calculations, instantiate the class with an interatomic model, which can be a KIM potential installed on your system or
