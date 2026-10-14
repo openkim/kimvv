@@ -11,7 +11,7 @@ def install_models():
                 "kim-api-collections-management",
                 "install",
                 "CWD",
-                "LJ_ElliottAkerson_2015_Universal__MO_959249795837_003",
+                "EAM_Dynamo_Ackland_1987_Au__MO_754413982908_001",
             ],
             check=True,
             capture_output=True,
