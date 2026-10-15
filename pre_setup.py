@@ -89,6 +89,7 @@ if __name__ == "__main__":
     kimvv_test_drivers = {}
     kimvv_test_inputs = {}
 
+    manifest_kimvv = ""
     # Download and untar production OpenKIM TDs
     for test_driver in OPENKIM_TEST_DRIVERS:
         print(f"Importing {test_driver}")
@@ -107,6 +108,11 @@ if __name__ == "__main__":
         with tarfile.open(driver_archive, "r:xz") as f:
             f.extractall()
         move_driver(prefix, test_driver)
+        # Add citation info for production TDs
+        shortid = test_driver.split("__")[1]
+        kimcite_file = f"kimcite-{shortid}.bib"
+        kimcite_path = os.path.join("kimvv", prefix, kimcite_file)
+        manifest_kimvv += "include " + kimcite_path + "\n"
 
     # Download and untar development TDs
     for test_driver in DEVEL_TEST_DRIVERS:
@@ -157,7 +163,6 @@ if __name__ == "__main__":
 
     with open("pyproject.toml.tpl") as f_pyproject:
         pyproject = tomlkit.parse(f_pyproject.read())
-    manifest_kimvv = ""
 
     # Should by now all be in directories named `kimvv/{test_driver}`
     for test_driver in kimvv_test_drivers:
@@ -169,7 +174,6 @@ if __name__ == "__main__":
             )
         else:
             print("NOTE: Importing a Test Driver without a requirements.txt")
-
         # Kimspec should always exist
         kimspec_path = os.path.join(driver_path, "kimspec.edn")
         kimspec = kim_edn.load(kimspec_path)

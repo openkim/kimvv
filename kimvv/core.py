@@ -3,7 +3,7 @@ import os
 import pathlib
 import shutil
 from tempfile import TemporaryDirectory
-from typing import Any
+from typing import Any, Optional
 
 import kim_edn
 
@@ -25,6 +25,22 @@ class KIMVVTestDriver:
         mypath = pathlib.Path(__file__).parent.resolve()
         myname = cls.__name__
         return kim_edn.load(os.path.join(mypath, myname, "kimspec.edn"))
+
+    @classmethod
+    def get_kimcite(cls) -> Optional[str]:
+        """
+        Get the text of kimcite.bib for the Test Driver,
+        or None if it doesn't exist
+        """
+        # TODO: Cite dependencies as well
+        mypath = pathlib.Path(__file__).parent.resolve()
+        myname = cls.__name__
+        kimcite_path = os.path.join(mypath, myname, "kimspec.edn")
+        if os.path.isfile(kimcite_path):
+            with open(kimcite_path) as f:
+                return f.read()
+        else:
+            return None
 
     def _resolve_dependencies(self, material, **kwargs):
         """
@@ -114,6 +130,21 @@ def override_call_method(cls):
         finally:
             # Postprocess output directory for this invocation
             self._archive_aux_files()
+
+        kimcite = self.get_kimcite()
+        if kimcite is not None:
+            print(
+                "=========================== CITATION INFO ==========================="
+            )
+            print(
+                "If you use this result in a publication, please cite the Test Driver "
+            )
+            print("you used. A BibTeX printout is accessible via")
+            print(f"{type(self).__name__}.get_kimcite()")
+            print(
+                "=========================== CITATION INFO ==========================="
+            )
+            print(kimcite)
 
         # The current invocation returns a Python list of dictionaries containing all
         # properties computed during this run
