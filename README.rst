@@ -56,6 +56,12 @@ Installation
 ``kimvv`` is installable with ``pip install kimvv``, but it requires some non-Python rquirements to be installed first.
 These prerequisites are decribed in installation info for ``kim-tools``, the backend for ``kimvv``, here: https://kim-tools.readthedocs.io/en/stable/#doc-standalone-installation.
 
+How to cite:
+------------
+If you use the results from this package in a publication, please cite the Test Driver(s) you used. A BibTeX printout is available
+via the ``get_kimcite`` class method of each class, e.g. ``print(kimvv.EquilibriumCrystalStructure.get_kimcite())``. An additional
+paper to cite is coming soon.
+
 Basic usage example:
 --------------------
 Computing elastic constants for FCC argon using an example KIM potential

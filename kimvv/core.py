@@ -35,11 +35,16 @@ class KIMVVTestDriver:
         # TODO: Cite dependencies as well
         mypath = pathlib.Path(__file__).parent.resolve()
         myname = cls.__name__
-        kimcite_path = os.path.join(mypath, myname, "kimspec.edn")
+        kimspec = cls.get_kimspec()
+        if "extended-id" in kimspec:
+            shortid = kimspec["extended-id"].split("__")[1]
+        else:  # Might be a non-production TD
+            return None
+        kimcite_path = os.path.join(mypath, myname, f"kimcite-{shortid}.bib")
         if os.path.isfile(kimcite_path):
             with open(kimcite_path) as f:
                 return f.read()
-        else:
+        else:  # Might be a non-production TD
             return None
 
     def _resolve_dependencies(self, material, **kwargs):
@@ -133,6 +138,7 @@ def override_call_method(cls):
 
         kimcite = self.get_kimcite()
         if kimcite is not None:
+            print()
             print(
                 "=========================== CITATION INFO ==========================="
             )
@@ -140,11 +146,11 @@ def override_call_method(cls):
                 "If you use this result in a publication, please cite the Test Driver "
             )
             print("you used. A BibTeX printout is accessible via")
-            print(f"{type(self).__name__}.get_kimcite()")
+            print(f"kimvv.{type(self).__name__}.get_kimcite()")
             print(
                 "=========================== CITATION INFO ==========================="
             )
-            print(kimcite)
+            print()
 
         # The current invocation returns a Python list of dictionaries containing all
         # properties computed during this run
